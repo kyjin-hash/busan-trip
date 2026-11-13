@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>찌니와 연두의 부산 여행</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;600;800;900&display=swap">
+<style>
+/* Layout: 휴대폰 세로 스크롤. 상단 고정 날짜 탭 → 날짜별 '먹을 곳' 카드 → 시간표 타임라인 → 숙소 · 체크리스트 */
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --ink:#111827; --sub:#4b5563; --faint:#8b93a1; --line:#e5e7eb;
+  --sea:#0b6e8a; --sea-bg:#e3f2f6;
+  --food:#e8553d; --food-bg:#fde9e4;
+  --cafe:#9a6a2f; --cafe-bg:#f6ecdf;
+  --move:#6b7280; --move-bg:#eef0f3;
+  --rain:#3b6fd8; --rain-bg:#e6eefc;
+  --hero:#0e2a35; --hero-ink:#ffffff; --hero-sub:#a9c7d1;
+  --land:#f1efe8; --seafill:#cfe6ee; --coast:#9cc5d3;
+  --font:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1014; --surface:#141b21; --ink:#f3f4f6; --sub:#c2c8d0; --faint:#8a939e; --line:#26313a;
+  --sea:#5cc4de; --sea-bg:#12313b; --food:#ff8a72; --food-bg:#3a1f1a; --cafe:#e0b27a; --cafe-bg:#33261a;
+  --move:#a3abb6; --move-bg:#1f2830; --rain:#8fb0f5; --rain-bg:#18233b;
+  --hero:#102f3b; --hero-ink:#ffffff; --hero-sub:#9fc3cf; --land:#1b242b; --seafill:#0f2a35; --coast:#2b5563; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1014; --surface:#141b21; --ink:#f3f4f6; --sub:#c2c8d0; --faint:#8a939e; --line:#26313a;
+  --sea:#5cc4de; --sea-bg:#12313b; --food:#ff8a72; --food-bg:#3a1f1a; --cafe:#e0b27a; --cafe-bg:#33261a;
+  --move:#a3abb6; --move-bg:#1f2830; --rain:#8fb0f5; --rain-bg:#18233b;
+  --hero:#102f3b; --hero-ink:#ffffff; --hero-sub:#9fc3cf; --land:#1b242b; --seafill:#0f2a35; --coast:#2b5563; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 64px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em}
+a{color:inherit}
+
+/* hero */
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:24px;padding:24px 22px;display:flex;flex-direction:column;gap:16px}
+.hero .eyebrow{font-size:.8rem;font-weight:600;color:var(--hero-sub);letter-spacing:.08em}
+.hero h1{font-size:2.3rem;font-weight:900;line-height:1.1}
+.hero h1 span{color:#ffb39f}
+.hero .lead{margin:0;color:var(--hero-sub);font-size:.95rem}
+.qf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.qf div{background:rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;min-width:0}
+.qf small{display:block;font-size:.72rem;color:var(--hero-sub)}
+.qf b{display:block;font-size:1.05rem;font-weight:800;font-variant-numeric:tabular-nums}
+.qf i{font-style:normal;font-size:.75rem;color:var(--hero-sub);display:block;line-height:1.35}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;gap:8px}
+.tabs a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:.95rem;padding:10px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.tabs a:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+
+/* day header + weather */
+.day{display:flex;flex-direction:column;gap:14px;scroll-margin-top:70px}
+.dh{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.dh h2{font-size:1.7rem;font-weight:900}
+.dh p{margin:0;color:var(--sub);font-size:.9rem}
+.wx{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:700;padding:5px 12px;border-radius:999px}
+.wx.r{background:var(--rain-bg);color:var(--rain)} .wx.s{background:var(--food-bg);color:var(--food)}
+
+/* eat cards */
+.sec-t{font-size:.8rem;font-weight:800;color:var(--faint);letter-spacing:.08em}
+.eats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.eat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.eat .k{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.chip{font-size:.72rem;font-weight:800;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.chip.food{background:var(--food-bg);color:var(--food)} .chip.cafe{background:var(--cafe-bg);color:var(--cafe)}
+.eat .tm{font-size:.8rem;color:var(--faint);font-weight:700;font-variant-numeric:tabular-nums}
+.eat h3{font-size:1.08rem;font-weight:800;line-height:1.3}
+.eat p{margin:0;font-size:.85rem;color:var(--sub);line-height:1.45;flex:1}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-size:.8rem;font-weight:800;padding:7px 11px;border-radius:10px;line-height:1}
+.btn.blog{background:#03c75a;color:#fff}
+.btn.map{background:var(--move-bg);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.tl li{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+.tl li:first-child{border-top:0}
+.tl .t{font-weight:900;font-size:1.02rem;font-variant-numeric:tabular-nums;padding-top:1px}
+.tl .c{min-width:0;display:flex;flex-direction:column;gap:5px}
+.tl h3{font-size:1.05rem;font-weight:800;line-height:1.35;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tl p{margin:0;font-size:.9rem;color:var(--sub)}
+.tl li.food{background:linear-gradient(90deg,var(--food-bg),transparent 70%)}
+.tl li.food .t{color:var(--food)}
+.tl li.cafe .t{color:var(--cafe)}
+.tl li.see .t{color:var(--sea)}
+.tl li.move .t{color:var(--move)}
+.alt{background:var(--rain-bg);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:.86rem}
+.alt b{color:var(--rain)}
+
+
+.main{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start}
+.col{display:flex;flex-direction:column;gap:22px;min-width:0}
+@media (min-width:900px){
+  .main{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+  .mapcard{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+}
+.mapcard{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mapcard .mh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.mapcard h2{font-size:1.2rem;font-weight:900}
+.seg{display:flex;gap:4px;background:var(--bg);padding:3px;border-radius:999px}
+.seg button{font:inherit;font-size:.8rem;font-weight:800;border:0;background:transparent;color:var(--sub);padding:6px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg button:focus-visible{outline:2px solid var(--sea)}
+.mapsvg{width:100%;height:auto;display:block;border-radius:14px;background:var(--land)}
+.mapsvg .sea{fill:var(--seafill)}
+.mapsvg .isl{fill:var(--land);stroke:var(--coast);stroke-width:1}
+.mapsvg .coast{fill:none;stroke:var(--coast);stroke-width:1.2}
+.mapsvg .route{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:7 6}
+.mapsvg .r1{stroke:var(--food)} .mapsvg .r2{stroke:var(--sea)}
+.mapsvg .pin circle{stroke:var(--surface);stroke-width:2.5}
+.mapsvg .pin text{font-family:var(--font);font-weight:900;font-size:12px;fill:#fff;text-anchor:middle;dominant-baseline:central}
+.mapsvg .lbl{font-family:var(--font);font-weight:800;font-size:12.5px;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round}
+.mapsvg .area{font-family:var(--font);font-weight:600;font-size:13px;fill:var(--faint);letter-spacing:.2em}
+.mapsvg .dim{opacity:.18}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--sub);font-weight:700}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:0}
+.num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:.72rem;font-weight:900;flex:none}
+.num.d1{background:var(--food)} .num.d2{background:var(--sea)}
+
+/* boxes */
+.box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.box h2{font-size:1.3rem;font-weight:900}
+.box p{margin:0}
+.opt{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;background:var(--bg)}
+.opt b{font-weight:800}
+.opt span{font-size:.88rem;color:var(--sub)}
+.opt .chip{align-self:flex-start;margin-bottom:4px}
+.chip.sea{background:var(--sea-bg);color:var(--sea)} .chip.mv{background:var(--move-bg);color:var(--move)}
+.check{list-style:none;margin:0;padding:0}
+.check label{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);cursor:pointer;font-size:.95rem}
+.check li:first-child label{border-top:0}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--sea);flex:none}
+.check input:checked + span{color:var(--faint);text-decoration:line-through}
+.note{font-size:.8rem;color:var(--faint)}
+@media (max-width:430px){
+  .hero h1{font-size:1.95rem}
+  .qf{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tl li{grid-template-columns:52px 1fr;padding:13px 14px}
+}
+@media (max-width:360px){.eats{grid-template-columns:1fr}}
+@media (max-width:560px){.mapsvg .lbl{font-size:17px;stroke-width:5px}.mapsvg .area{font-size:16px}.mapcard{padding:12px}}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">BUSAN · 11.14 SAT – 11.15 SUN</span>
+    <h1><span style="color:inherit;white-space:nowrap">찌니 &amp; 연두의</span> <span style="white-space:nowrap"><span>부산</span> 1박 2일</span></h1>
+    <p class="lead">낙곱새로 시작해서 자갈치 회, 두루미 오겹살. 다음 날은 복국, 해녀촌, 바다 드라이브.</p>
+    <div class="qf">
+      <div><small>가는 길</small><b>KTX 05:30</b><i>수서 → 부산 08:06</i></div>
+      <div><small>차</small><b>그린카 08:00</b><i>부산역 픽업 · 김해 반납</i></div>
+      <div><small>오는 길</small><b>✈ 20:50</b><i>김해 → 김포</i></div>
+    </div>
+  </header>
+
+  <div class="main">
+  <aside class="mapcard" aria-labelledby="mapt">
+    <div class="mh"><h2 id="mapt">한눈에 보는 동선</h2>
+      <div class="seg" role="group" aria-label="지도에 표시할 날짜">
+        <button type="button" id="f0" data-f="0" aria-pressed="true">전체</button>
+        <button type="button" id="f1" data-f="1" aria-pressed="false">토</button>
+        <button type="button" id="f2" data-f="2" aria-pressed="false">일</button>
+      </div></div>
+    <svg class="mapsvg" id="map" viewBox="0 0 600 560" role="img" aria-label="부산 이틀 동선 지도"></svg>
+    <div class="legend"><span><i style="background:var(--food)"></i>11.14 토</span><span><i style="background:var(--sea)"></i>11.15 일</span><span>번호 = 시간표 순서</span></div>
+    <p class="note">위치는 대략적인 표시예요. 길 찾기는 각 장소의 지도 버튼으로.</p>
+  </aside>
+  <div class="col">
+  <nav class="tabs" aria-label="날짜">
+    <a href="#day1">11.14 토</a><a href="#day2">11.15 일</a><a href="#prep">준비물</a>
+  </nav>
+
+  <section class="day" id="day1" aria-labelledby="h1d">
+    <div class="dh"><div><h2 id="h1d">Day 1 · 토</h2><p>영도 → 자갈치 → 서면 → 광안리</p></div><span class="wx r">☂ 비 · 13~16°C</span></div>
+    <span class="sec-t">오늘 먹을 곳</span>
+    <div class="eats" data-day="1"></div>
+    <span class="sec-t">시간표</span>
+    <ol class="tl" data-day="1"></ol>
+  </section>
+
+  <section class="day" id="day2" aria-labelledby="h2d">
+    <div class="dh"><div><h2 id="h2d">Day 2 · 일</h2><p>해운대 → 기장 해안 드라이브 → 김해</p></div><span class="wx s">☀ 오전부터 갬</span></div>
+    <span class="sec-t">오늘 먹을 곳</span>
+    <div class="eats" data-day="2"></div>
+    <span class="sec-t">시간표</span>
+    <ol class="tl" data-day="2"></ol>
+  </section>
+
+  <section class="box" aria-labelledby="stay">
+    <h2 id="stay">숙소 고르기</h2>
+    <p class="note">에어비앤비 1박 10~15만 원 · 차가 있으니 주차 가능이 1순위</p>
+    <div class="opt"><span class="chip sea">추천</span><b>광안리 (광안동 · 민락동)</b><span>광안대교 야경, 서면까지 택시 20분, 일요일 해운대·기장 드라이브 동선에도 맞음</span></div>
+    <div class="opt"><span class="chip mv">대안</span><b>서면 · 전포</b><span>두루미까지 걸어감, 비 오는 날 이동 편함. 대신 바다 뷰 없음</span></div>
+  </section>
+
+  <section class="box" id="prep" aria-labelledby="todo">
+    <h2 id="todo">출발 전 체크</h2>
+    <ul class="check">
+      <li><label><input type="checkbox" id="c1"><span>우산 2개 · 따뜻한 겉옷 (토요일 비, 15°C 안팎)</span></label></li>
+      <li><label><input type="checkbox" id="c2"><span>신분증 (항공) · 운전면허증 (그린카)</span></label></li>
+      <li><label><input type="checkbox" id="c3"><span>KTX 승차권 · 김해→김포 항공권</span></label></li>
+      <li><label><input type="checkbox" id="c4"><span>에어비앤비 예약 · 주차 가능 확인</span></label></li>
+      <li><label><input type="checkbox" id="c5"><span>그린카 김해 반납 지점 주소 · 공항 가는 방법</span></label></li>
+      <li><label><input type="checkbox" id="c7"><span>토요일 18:00 정각 두루미 캐치테이블 줄서기</span></label></li>
+      <li><label><input type="checkbox" id="c8"><span>보조배터리 · 충전기</span></label></li>
+    </ul>
+    <p class="note">체크 표시는 이 기기에만 저장돼요.</p>
+  </section>
+  </div>
+  </div>
+</div>
+
+<script>
+var MAP = function(q){ return "https://map.naver.com/p/search/" + encodeURIComponent(q); };
+var BLOG = function(q){ return "https://search.naver.com/search.naver?ssc=tab.blog.all&query=" + encodeURIComponent(q); };
+
+// 먹을 곳 (식당 · 카페)
+var EATS = {
+  1: [
+    {kind:"food", label:"아침", time:"08:45", name:"태종대 전주식당", desc:"낙곱새 전골. 09:00 오픈 첫 손님으로", blog:"https://blog.naver.com/kyell/223033096259", map:"태종대 전주식당"},
+    {kind:"food", label:"점심 · 회", time:"13:00", name:"자갈치시장", desc:"1층에서 회 고르고 2층 초장집에서 매운탕까지", blog:BLOG("자갈치시장 회 초장집"), map:"자갈치시장"},
+    {kind:"food", label:"저녁", time:"19:30", name:"서면 두루미", desc:"제주 오겹살 · 한라산볶음밥. 18:00 캐치테이블 줄서기", blog:BLOG("서면 두루미 오겹살"), map:"서면 두루미"},
+    {kind:"cafe", label:"카페", time:"11:30", name:"피아크 (P.ARK)", desc:"영도 조선소 자리 초대형 오션뷰 카페 · 베이커리", blog:BLOG("영도 피아크 카페"), map:"피아크 카페 영도"}
+  ],
+  2: [
+    {kind:"food", label:"아침", time:"10:45", name:"해운대 금수복국", desc:"전날 술 마셨으니 시원한 복국으로 해장", blog:BLOG("해운대 금수복국"), map:"금수복국 해운대"},
+    {kind:"food", label:"점심 · 해산물", time:"13:30", name:"기장 연화리 해녀촌", desc:"해녀분들이 파는 해산물 모둠 · 전복죽", blog:BLOG("기장 연화리 해녀촌"), map:"연화리 해녀촌"},
+    {kind:"food", label:"저녁", time:"17:40", name:"김해 반납 지점 근처", desc:"공항 가기 전 가볍게. 반납 지점 정해지면 추가", blog:null, map:null},
+    {kind:"cafe", label:"카페", time:"15:00", name:"웨이브온 커피", desc:"기장 임랑 바다 앞 통유리 오션뷰 카페", blog:BLOG("기장 웨이브온 커피"), map:"웨이브온 커피 기장"}
+  ]
+};
+
+// 시간표: kind = move | see | food | cafe
+var PLAN = {
+  1: [
+    {t:"04:30", k:"move", h:"기상 · 준비", p:"선정릉 자취방. 짐은 전날 싸두기"},
+    {t:"05:00", k:"move", h:"택시 → 수서역", p:"약 15분. 지하철 첫차로는 시간이 안 맞아요"},
+    {t:"05:30", k:"move", h:"KTX 수서 출발", p:"부산역 08:06 도착. 기차에서 한숨 더 자기"},
+    {t:"08:15", k:"move", n:1, h:"그린카 픽업", p:"08:00 대여 시작. 내리자마자 부산역 앞 아스티호텔 주차장으로. 차량 사진 찍기", map:"아스티호텔 부산"},
+    {t:"08:45", k:"food", n:2, h:"아침 · 전주식당 낙곱새", p:"부산역에서 차로 20분", blog:"https://blog.naver.com/kyell/223033096259", map:"태종대 전주식당"},
+    {t:"10:00", k:"see", n:3, h:"한국해양대학교", p:"영도 조도(아치섬) 캠퍼스", alt:"차로 캠퍼스 한 바퀴 돌고 바로 옆 국립해양박물관(실내, 무료)", map:"한국해양대학교"},
+    {t:"11:30", k:"cafe", n:4, h:"카페 · 피아크", p:"비 오는 영도 바다 보면서 커피 · 빵", blog:BLOG("영도 피아크 카페"), map:"피아크 카페 영도"},
+    {t:"13:00", k:"food", n:5, h:"점심 · 자갈치시장 회", p:"영도대교 건너면 바로. 실내라 비 와도 OK", blog:BLOG("자갈치시장 회 초장집"), map:"자갈치시장"},
+    {t:"14:30", k:"move", h:"숙소 쪽으로 이동", p:"비 그치면 근처 해변 산책", alt:"시간 남으면 신세계 센텀시티 스파랜드(찜질)"},
+    {t:"15:30", k:"see", n:6, h:"숙소 체크인 · 낮잠", p:"차는 숙소에 주차. 4시 반에 일어났으니 꼭 쉬기"},
+    {t:"18:00", k:"food", h:"두루미 캐치테이블 줄서기", p:"18:00 정각에 바로 걸고, 대기 순번 보고 출발"},
+    {t:"18:15", k:"move", h:"택시 → 서면", p:"술 마시니 차는 두고 가기. 약 20분", alt:"대기 길면 바로 옆 전포 카페거리에서 기다리기"},
+    {t:"19:30", k:"food", n:7, h:"저녁 · 서면 두루미", p:"제주 오겹살 · 한라산볶음밥. 입장 시간은 웨이팅에 따라", blog:BLOG("서면 두루미 오겹살"), map:"서면 두루미"},
+    {t:"21:30", k:"see", n:8, h:"광안리 야경 · 2차", p:"비 그친 광안대교 야경. 회 또 당기면 민락 회센터 포장"}
+  ],
+  2: [
+    {t:"09:30", k:"move", h:"기상 · 준비"},
+    {t:"10:30", k:"move", h:"체크아웃", p:"에어비앤비는 보통 11시"},
+    {t:"10:45", k:"food", n:1, h:"아침 · 해운대 금수복국", p:"해장 복국", blog:BLOG("해운대 금수복국"), map:"금수복국 해운대"},
+    {t:"11:45", k:"see", n:2, h:"해운대 시장 · 해변 산책", p:"상국이네 떡볶이·튀김은 간식으로 조금만", blog:"https://blog.naver.com/mok5022/223071981291", map:"상국이네 해운대"},
+    {t:"12:30", k:"see", n:3, h:"해안선 드라이브", p:"달맞이길 → 청사포 → 송정 → 대변항 → 죽성성당", map:"달맞이길"},
+    {t:"13:30", k:"food", n:4, h:"점심 · 연화리 해녀촌", p:"대변항 바로 옆. 해산물 모둠 · 전복죽", blog:BLOG("기장 연화리 해녀촌"), map:"연화리 해녀촌"},
+    {t:"15:00", k:"cafe", n:5, h:"카페 · 웨이브온 커피", p:"임랑 바다 앞에서 드라이브 마무리", blog:BLOG("기장 웨이브온 커피"), map:"웨이브온 커피 기장"},
+    {t:"16:30", k:"move", h:"김해공항 쪽으로 이동", p:"고속도로로 약 1시간. 일요일 오후 정체 감안"},
+    {t:"17:40", k:"food", h:"저녁", p:"반납 지점 근처나 공항 안에서 가볍게. 반납 전 주유"},
+    {t:"18:40", k:"move", n:6, h:"그린카 반납", p:"김해공항 근처 지점. 짐 챙기고 차량 사진"},
+    {t:"19:00", k:"move", h:"공항 이동 · 국내선 도착", p:"셔틀이나 택시. 19:50 전 도착, 신분증 필수"},
+    {t:"20:50", k:"move", n:7, h:"김해 출발 → 김포", p:"약 1시간 비행. 집까지 조심히"}
+  ]
+};
+
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function buttons(blog, map){
+  var b = "";
+  if (blog) b += '<a class="btn blog" href="' + esc(blog) + '" target="_blank" rel="noopener">N 블로그 후기</a>';
+  if (map) b += '<a class="btn map" href="' + esc(MAP(map)) + '" target="_blank" rel="noopener">지도</a>';
+  return b ? '<div class="btns">' + b + "</div>" : "";
+}
+[1,2].forEach(function(d){
+  document.querySelector('.eats[data-day="'+d+'"]').innerHTML = EATS[d].map(function(e){
+    return '<article class="eat"><div class="k"><span class="chip ' + e.kind + '">' + esc(e.label) + '</span><span class="tm">' + e.time + '</span></div>' +
+      '<h3>' + esc(e.name) + '</h3><p>' + esc(e.desc) + '</p>' + buttons(e.blog, e.map) + '</article>';
+  }).join("");
+  document.querySelector('.tl[data-day="'+d+'"]').innerHTML = PLAN[d].map(function(x){
+    return '<li class="' + x.k + '"><div class="t">' + x.t + '</div><div class="c"><h3>' + (x.n ? '<span class="num d'+d+'">'+x.n+'</span>' : '') + esc(x.h) + '</h3>' +
+      (x.p ? '<p>' + esc(x.p) + '</p>' : '') +
+      (x.alt ? '<div class="alt"><b>☂ 비 오면</b> ' + esc(x.alt) + '</div>' : '') +
+      buttons(x.blog, x.map) + '</div></li>';
+  }).join("");
+});
+
+// 지도: 대략적인 위경도 → SVG 좌표 (가로 128.92~129.29, 세로 35.04~35.34)
+function P(lng,lat){ return [ (lng-128.92)/0.37*600, (35.34-lat)/0.30*560 ]; }
+var STOPS = {
+  1: [["부산역 · 그린카",129.0422,35.1152],["전주식당",129.0790,35.0610],["해양대",129.0870,35.0770],["피아크",129.0700,35.0850],
+      ["자갈치시장",129.0306,35.0966],["숙소 (광안리)",129.1187,35.1532],["서면 두루미",129.0640,35.1570],["광안리 야경",129.1187,35.1532]],
+  2: [["금수복국",129.1600,35.1610],["해운대 시장",129.1620,35.1625],["달맞이길 → 송정",129.1950,35.1700],["연화리 해녀촌",129.2240,35.2050],
+      ["웨이브온 커피",129.2640,35.3180],["그린카 반납",128.9520,35.1800],["김해공항",128.9470,35.1730]]
+};
+var COAST=[[128.92,35.06],[128.97,35.07],[129.00,35.08],[129.02,35.09],[129.035,35.095],[129.05,35.105],[129.07,35.12],[129.09,35.13],[129.11,35.145],[129.125,35.15],[129.14,35.155],[129.165,35.157],[129.18,35.157],[129.19,35.161],[129.2,35.175],[129.215,35.19],[129.225,35.205],[129.235,35.225],[129.25,35.24],[129.255,35.27],[129.265,35.30],[129.27,35.34]];
+var ISLAND=[[129.035,35.088],[129.055,35.092],[129.075,35.088],[129.09,35.08],[129.098,35.066],[129.088,35.052],[129.07,35.05],[129.05,35.058],[129.035,35.072]];
+function pts(a){ return a.map(function(q){ var p=P(q[0],q[1]); return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" "); }
+function drawMap(f){
+  var sea = pts(COAST.concat([[129.29,35.34],[129.29,35.04],[128.92,35.04]]));
+  var g = '<polygon class="sea" points="'+sea+'"/><polyline class="coast" points="'+pts(COAST)+'"/><polygon class="isl" points="'+pts(ISLAND)+'"/>';
+  var a=P(128.96,35.30); g+='<text class="area" x="'+a[0]+'" y="'+a[1]+'">김해 · 서부산</text>';
+  a=P(129.13,35.07); g+='<text class="area" x="'+a[0]+'" y="'+a[1]+'">남해 바다</text>';
+  a=P(129.04,35.045); g+='<text class="area" x="'+a[0]+'" y="'+a[1]+'">영도</text>';
+  var labels=''; var pins='';
+  [1,2].forEach(function(d){
+    var dim = (f && f!==d) ? ' dim' : '';
+    var line = STOPS[d].map(function(s){ return P(s[1],s[2]); });
+    if (d===2){ line.unshift(P(129.1187,35.1532)); }  // 일요일은 광안리 숙소에서 출발
+    g += '<polyline class="route r'+d+dim+'" points="'+line.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'"/>';
+    STOPS[d].forEach(function(s,i){
+      if (d===1 && i===7) return;           // 광안리 야경은 숙소와 같은 자리
+      if (d===2 && i===1) return;           // 해운대 시장은 복국집 바로 옆
+      if (d===2 && i===5) return;           // 반납 지점은 공항 근처
+      var p=P(s[1],s[2]);
+      var off = {"1-0":[12,-10],"1-1":[14,14],"1-2":[14,2],"1-3":[-14,-12,"end"],"1-4":[-14,4,"end"],"1-5":[14,18],"1-6":[0,-17,"mid"],
+                 "2-0":[-14,-14,"end"],"2-2":[14,6],"2-3":[-14,4,"end"],"2-4":[-14,4,"end"],"2-6":[14,16]}[d+"-"+i] || [14,4];
+      var nm = d===1 && i===5 ? "광안리 숙소 · 야경" : d===2 && i===0 ? "해운대 복국 · 시장" : d===2 && i===6 ? "그린카 반납 · 김해공항" : s[0];
+      var num = d===1 && i===5 ? "6·8" : d===2 && i===6 ? "6·7" : d===2 && i===0 ? "1·2" : String(i+1);
+      labels += '<text class="lbl'+dim+'" x="'+(p[0]+off[0]).toFixed(1)+'" y="'+(p[1]+off[1]).toFixed(1)+'"'+(off[2]?' text-anchor="'+(off[2]==='mid'?'middle':'end')+'"':'')+'>'+nm+'</text>';
+      var r = num.length>1 ? 14 : 11;
+      pins += '<g class="pin'+dim+'"><circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+r+'" fill="var(--'+(d===1?'food':'sea')+')"/><text x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" style="font-size:'+(num.length>1?10:12)+'px">'+num+'</text></g>';
+    });
+  });
+  document.getElementById('map').innerHTML = g + labels + pins;
+}
+drawMap(0);
+document.querySelectorAll('.seg button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true' : 'false'); });
+    drawMap(+b.dataset.f);
+  });
+});
+
+document.querySelectorAll('.check input').forEach(function(cb){
+  try{ cb.checked = localStorage.getItem('busan-'+cb.id) === '1'; }catch(e){}
+  cb.addEventListener('change', function(){ try{ localStorage.setItem('busan-'+cb.id, cb.checked?'1':'0'); }catch(e){} });
+});
+</script>
+
+</body>
+</html>
