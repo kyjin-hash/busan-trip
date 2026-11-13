@@ -53,8 +53,9 @@ a{color:inherit}
 
 /* tabs */
 .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;gap:8px}
-.tabs a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:.95rem;padding:10px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
-.tabs a:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.tabs a,.tabs button{flex:1;font:inherit;color:var(--ink);cursor:pointer;text-align:center;text-decoration:none;font-weight:800;font-size:.95rem;padding:10px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs a:focus-visible,.tabs button:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
 
 /* day header + weather */
 .day{display:flex;flex-direction:column;gap:14px;scroll-margin-top:70px}
@@ -180,7 +181,7 @@ a{color:inherit}
   </aside>
   <div class="col">
   <nav class="tabs" aria-label="날짜">
-    <a href="#day1">11.14 토</a><a href="#day2">11.15 일</a><a href="#prep">준비물</a>
+    <button type="button" data-f="0" aria-pressed="true">전체</button><button type="button" data-f="1" aria-pressed="false">11.14 토</button><button type="button" data-f="2" aria-pressed="false">11.15 일</button><a href="#prep">준비물</a>
   </nav>
 
   <section class="day" id="day1" aria-labelledby="h1d">
@@ -337,11 +338,15 @@ function drawMap(f){
   document.getElementById('map').innerHTML = g + labels + pins;
 }
 drawMap(0);
-document.querySelectorAll('.seg button').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true' : 'false'); });
-    drawMap(+b.dataset.f);
-  });
+// 날짜 선택: 상단 탭과 지도 버튼이 같이 움직임. 하루를 고르면 지도와 일정 모두 그날만 표시
+function pick(f){
+  document.querySelectorAll('.seg button, .tabs button').forEach(function(x){ x.setAttribute('aria-pressed', +x.dataset.f===f ? 'true' : 'false'); });
+  document.getElementById('day1').hidden = (f===2);
+  document.getElementById('day2').hidden = (f===1);
+  drawMap(f);
+}
+document.querySelectorAll('.seg button, .tabs button').forEach(function(b){
+  b.addEventListener('click', function(){ pick(+b.dataset.f); });
 });
 
 document.querySelectorAll('.check input').forEach(function(cb){
